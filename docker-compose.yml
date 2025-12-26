@@ -1,0 +1,64 @@
+# Удалите первую строку "version: '3.8'"
+# Начните файл сразу с:
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: incident-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: incident_system
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - incident-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: incident-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - incident-network
+
+  webhook-mock:
+    image: python:3.9-alpine
+    container_name: incident-webhook-mock
+    command: >
+      sh -c "pip install flask &&
+             echo 'from flask import Flask, request, jsonify
+             app = Flask(__name__)
+             @app.route(\"/webhook\", methods=[\"POST\"])
+             def webhook():
+                 print(f\"Received webhook: {request.json}\")
+                 return jsonify({\"status\": \"received\"}), 200
+             if __name__ == \"__main__\":
+                 app.run(host=\"0.0.0.0\", port=9090)' > app.py &&
+             python app.py"
+    ports:
+      - "9090:9090"
+    networks:
+      - incident-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  incident-network:
+    driver: bridge
