@@ -120,3 +120,17 @@ X-API-Key: operator-key-secure-change-me
 GET /api/v1/incidents/stats?minutes=60
 X-API-Key: operator-key-secure-change-me
 ```
+
+## 🔍 Автоматические скрипты проверки
+
+В папке `scripts/` находятся скрипты для автоматической проверки работоспособности системы:
+
+### Для Windows:
+```powershell
+# Основной PowerShell скрипт
+.\scripts\check-health.ps1
+```
+### Для Linux
+```bash
+.\scripts\check-health.sh
+```
