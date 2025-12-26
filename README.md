@@ -14,22 +14,28 @@
 
 ```bash
 # Клонируйте репозиторий
-git clone <repository-url>
+git clone https://github.com/Vimp17/incident-system
 cd incident-system
+```
 
 # Настройте окружение
+```bash
 cp .env.example .env
+```
 # Отредактируйте .env при необходимости
 
 # Запустите все сервисы
+```bash
 docker-compose up -d
-
+```
 # Примените миграции
+```bash
 docker-compose exec postgres psql -U postgres -d incident_system -f /docker-entrypoint-initdb.d/001_init.sql
-
+```
 # Проверьте работоспособность
+```bash
 curl http://localhost:8080/api/v1/system/health
-
+```
 
 🛠 Технический стек
 Backend: Go 1.24+ (Clean Architecture)
@@ -47,10 +53,11 @@ API Gateway: Gin Web Framework
 📡 API Endpoints
 Публичные эндпоинты
 Health Check
-bash
+```bash
 GET /api/v1/system/health
+```
 Проверка локации
-bash
+```bash
 POST /api/v1/location/check
 Content-Type: application/json
 
@@ -59,11 +66,12 @@ Content-Type: application/json
   "latitude": 55.7558,
   "longitude": 37.6173
 }
+```
 Защищенные эндпоинты (требуют X-API-Key)
 CRUD для инцидентов
 Создать инцидент:
 
-bash
+```bash
 POST /api/v1/incidents
 X-API-Key: operator-key-secure-change-me
 
@@ -76,19 +84,22 @@ X-API-Key: operator-key-secure-change-me
   "severity": "high",
   "radius": 1000
 }
+```
 Получить список инцидентов:
 
-bash
+```bash
 GET /api/v1/incidents?page=1&limit=10&active_only=true
 X-API-Key: operator-key-secure-change-me
+```
 Получить инцидент по ID:
 
-bash
+```bash
 GET /api/v1/incidents/{id}
 X-API-Key: operator-key-secure-change-me
+```
 Обновить инцидент:
 
-bash
+```bash
 PUT /api/v1/incidents/{id}
 X-API-Key: operator-key-secure-change-me
 
@@ -97,12 +108,15 @@ X-API-Key: operator-key-secure-change-me
   "severity": "medium",
   "active": false
 }
+```
 Удалить инцидент:
 
-bash
+```bash
 DELETE /api/v1/incidents/{id}
 X-API-Key: operator-key-secure-change-me
+```
 Статистика
-bash
+```bash
 GET /api/v1/incidents/stats?minutes=60
 X-API-Key: operator-key-secure-change-me
+```
